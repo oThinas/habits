@@ -16,8 +16,6 @@ export function HabitDay({ disabled = false, ...props }: IHabitDayProps) {
     <Popover.Root>
       <Popover.Trigger
         tabIndex={disabled ? -1 : 0}
-        /* className={`w-10 h-10 bg-zinc-900 border-2 border-zinc-800 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-700
-        ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`} */
         className={
           clsx(
             'w-10 h-10 border-2 border-zinc-800 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-700',
