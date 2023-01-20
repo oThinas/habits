@@ -6,15 +6,23 @@ import { prisma } from './lib/prisma';
 
 type HabitRequest = FastifyRequest<{ Body: { title: string, weekDays: number[] } }>;
 
+/**
+ * Recebe todos os hábitos da base de dados e os retorna.
+ * @param {FastifyInstance} app - FastifyInstance - A instância do Fastify.
+ */
 function getAll(app: FastifyInstance): void {
   app.get('/habits', async (_request, response) => {
     const habits = await prisma.habit.findMany();
-    if (habits.length === 0) return response.status(200).send({ errorMessage: 'Não foram encontrados hábitos.' });
+    if (habits.length === 0) return response.status(404).send({ errorMessage: 'Não foram encontrados hábitos.' });
 
     return response.send(habits);
   });
 }
 
+/**
+ * Recebe todos os hábitos possíveis de serem completados num determinado dia, e devolve-os juntamente com os hábitos que já tinham sido completados nesse dia
+ * @param {FastifyInstance} app - A instância do Fastify.
+ */
 function getByDay(app: FastifyInstance): void {
   app.get('/day', async (request, response) => {
     const getDaySchema = z.object({ date: z.coerce.date({ invalid_type_error: 'Data precisa ser uma string no formato yyyy-mm-ddThh:mm:ss.000z.' }) });
@@ -34,12 +42,16 @@ function getByDay(app: FastifyInstance): void {
     });
     const completedHabits = day?.dayHabits.map((dayHabit) => dayHabit.habitId);
 
-    if (possibleHabits.length === 0) return response.status(200).send({ errorMessage: 'Não foram encontrados hábitos para esse dia.' });
+    if (possibleHabits.length === 0) return response.status(404).send({ errorMessage: 'Não foram encontrados hábitos para esse dia.' });
 
     return response.send({ possibleHabits, completedHabits });
   });
 }
 
+/**
+ * Cria um hábito com um título e uma lista de dias da semana.
+ * @param {FastifyInstance} app - A instância do Fastify.
+ */
 function post(app: FastifyInstance): void {
   app.post('/habits', async (request: HabitRequest, response) => {
     const { isPostValid } = await validatePost(request, response);
@@ -62,6 +74,12 @@ function post(app: FastifyInstance): void {
   });
 }
 
+/**
+ * Valida o corpo da requisição POST do endpoint /habits
+ * @param {HabitRequest} request - HabitRequest - A requisição.
+ * @param {FastifyReply} response - FastifyReply - A resposta.
+ * @returns Um objeto com duas propriedades - error e isPostValid - ou { isPostValid: true }.
+ */
 async function validatePost(
   request: HabitRequest,
   response: FastifyReply,
