@@ -3,8 +3,7 @@ import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import colors from 'tailwindcss/colors';
 import { Feather } from '@expo/vector-icons';
 
-import { BackButton } from '../components/BackButton';
-import { Checkbox } from '../components/Checkbox';
+import { BackButton, Checkbox } from '../components';
 
 const availableWeekDays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 

@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+import './src/lib/dayjs';
+
 import { StatusBar } from 'react-native';
 import {
   useFonts,
@@ -8,7 +10,7 @@ import {
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
 
-import { Loading } from './src/components/Loading';
+import { Loading } from './src/components';
 import { Routes } from './src/routes';
 
 export default function App() {
