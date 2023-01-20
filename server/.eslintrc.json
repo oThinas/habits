@@ -150,7 +150,14 @@
     // Types
     "no-new-wrappers": "error",
     // Naming
-    "camelcase": "error",
+    "camelcase": [
+      "error",
+      {
+        "allow": [
+          "invalid_type_error"
+        ]
+      }
+    ],
     "no-underscore-dangle": [
       "error",
       {
