@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import dayjs from 'dayjs';
 import { z, ZodSchema } from 'zod';
 
-import { prisma } from './lib/prisma';
+import { prisma } from '../lib/prisma';
 
 type HabitRequest = FastifyRequest<{ Body: { title: string, weekDays: number[] } }>;
 
@@ -226,6 +226,6 @@ export async function habitRoutes(app: FastifyInstance): Promise<void> {
   getAll(app);
   getById(app);
   getByDay(app);
-  post(app);
   toggleHabit(app);
+  post(app);
 }
