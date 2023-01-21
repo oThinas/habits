@@ -3,14 +3,18 @@ import clsx from 'clsx';
 
 import { ProgressBar } from './ProgressBar';
 
+type ConflictProperties<T, K> = K extends true ? { habits?: never, disabled: boolean }
+: { disabled?: never, habits: { possible: number, completed: number } }
+& Omit<T, 'disabled' | 'habits'>;
+
 interface IHabitDayProps {
   disabled?: boolean;
-  habits: { possible: number, completed: number };
-} // TODO: adicionar um tipo mais adequado.
+  habits?: { possible: number, completed: number };
+}
 
-export function HabitDay({ disabled = false, ...props }: IHabitDayProps) {
-  if (disabled) props.habits = { possible: 1, completed: 0 };
-  const dayProgress = Math.round((props.habits.completed / props.habits.possible) * 100);
+export function HabitDay({ disabled = false, ...props }: ConflictProperties<IHabitDayProps, IHabitDayProps['disabled']>) {
+  const habits = disabled ? { possible: 1, completed: 0 } : (props.habits as { possible: number, completed: number });
+  const dayProgress = Math.round((habits.completed / habits.possible) * 100);
 
   return (
     <Popover.Root>

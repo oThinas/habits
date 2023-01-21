@@ -18,7 +18,7 @@ export function SummaryTable() {
 
       <div className='grid grid-rows-7 grid-flow-col gap-3'>
         {pastDates.map((__, index) => <HabitDay key={index} habits={{ completed: 4, possible: 5 }}/>)}
-        {futureDates.map((__, index) => <HabitDay key={index} disabled habits={{ completed: 4, possible: 5 }} />)}
+        {futureDates.map((__, index) => <HabitDay key={index} disabled/>)}
       </div>
     </div>
   );
