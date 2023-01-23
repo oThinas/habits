@@ -2,10 +2,11 @@ import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
 
 import { ProgressBar } from './ProgressBar';
+import { Checkbox } from './Checkbox';
 
-type ConflictProperties<T, K> = K extends true ? { habits?: never, disabled: boolean }
-: { disabled?: never, habits: { possible: number, completed: number } }
-& Omit<T, 'disabled' | 'habits'>;
+type ConflictProperties<T, K> = K extends true ? { habits?: never, disabled: boolean } :
+  { disabled?: never, habits: { possible: number, completed: number } } &
+  Omit<T, 'disabled' | 'habits'>;
 
 interface IHabitDayProps {
   disabled?: boolean;
@@ -42,6 +43,12 @@ export function HabitDay({ disabled = false, ...props }: ConflictProperties<IHab
           <span className='mt-1 font-extrabold leading-tight text-3xl'>20/01</span>
 
           <ProgressBar progress={dayProgress}/>
+
+          <div className='mt-6 flex flex-col gap-3'>
+            <Checkbox type='habit'>
+              Beber 2L de água
+            </Checkbox>
+          </div>
 
           <Popover.Arrow className='fill-zinc-900' height={8} width={16}/>
         </Popover.Content>
