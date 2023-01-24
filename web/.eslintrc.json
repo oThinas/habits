@@ -180,6 +180,7 @@
     "react/react-in-jsx-scope": "off"
   },
   "globals": {
-    "JSX": true
+    "JSX": true,
+    "React": true
   }
 }

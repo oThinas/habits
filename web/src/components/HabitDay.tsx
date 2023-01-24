@@ -45,7 +45,7 @@ export function HabitDay({ disabled = false, ...props }: ConflictProperties<IHab
           <ProgressBar progress={dayProgress}/>
 
           <div className='mt-6 flex flex-col gap-3'>
-            <Checkbox type='habit'>
+            <Checkbox variance='habit'>
               Beber 2L de água
             </Checkbox>
           </div>
