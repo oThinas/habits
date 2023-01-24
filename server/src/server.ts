@@ -4,7 +4,7 @@ import cors from '@fastify/cors';
 import { dayRoutes, habitRoutes } from './routes';
 
 const app = Fastify({ logger: true });
-app.register(cors, { origin: 'http:localhost/3000' });
+app.register(cors, { origin: true });
 
 app.register(habitRoutes);
 app.register(dayRoutes);
