@@ -1,42 +1,35 @@
 import { useState } from 'react';
+import { useForm, FieldValues } from 'react-hook-form';
 import { Check } from 'phosphor-react';
+import clsx from 'clsx';
 
 import { Checkbox } from './Checkbox';
-import clsx from 'clsx';
 
 const avaliableDays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
-
 export function NewHabitForm() {
-  const [title, setTitle] = useState('');
+  const { register, handleSubmit } = useForm();
   const [titleError, setTitleError] = useState(false);
-  function handleTitleInput(event: React.ChangeEvent<HTMLInputElement>) {
-    setTitleError(false);
-    setTitle((event.target.value).trim());
-  }
 
   const [selectedWeekDays, setSelectedWeekDays] = useState<number[]>([]);
+  const [selectedWeekDaysError, setSelectedWeekDaysError] = useState(false);
   function handleToggleWeekDay(weekDayIndex: number) {
+    setSelectedWeekDaysError(false);
     if (selectedWeekDays.includes(weekDayIndex)) setSelectedWeekDays(selectedWeekDays.filter((dayIndex) => dayIndex !== weekDayIndex));
     else setSelectedWeekDays([...selectedWeekDays, weekDayIndex]);
   }
 
-  function handleCreateNewHabit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (title.length < 3 || title.length > 30) {
-      setTitleError(true);
-
-      return;
-    }
-
+  const handleCreateNewHabit = (data: FieldValues) => {
+    const { title } = data;
+    if (title.length < 3 || title.length > 30) setTitleError(true);
+    if (selectedWeekDays.length === 0) setSelectedWeekDaysError(true);
+    if (titleError || selectedWeekDaysError) return;
     setSelectedWeekDays(selectedWeekDays.sort((a, b) => a - b));
-
     console.log(title, selectedWeekDays);
-  }
+  };
 
   return (
-    <form onSubmit={(event) => handleCreateNewHabit(event)} className='w-full flex flex-col mt-6'>
+    <form onSubmit={handleSubmit(handleCreateNewHabit)} className='w-full flex flex-col mt-6'>
       <label htmlFor='title' className='font-semibold leading-tight'>
         Qual seu comprometimento?
       </label>
@@ -52,7 +45,7 @@ export function NewHabitForm() {
             { 'ring-2 ring-red-500': titleError },
           )
         }
-        onChange={(event) => handleTitleInput(event)}
+        {...register('title', { minLength: 3, maxLength: 30, onChange: () => setTitleError(false) })}
       />
 
       {titleError && (
@@ -67,11 +60,21 @@ export function NewHabitForm() {
 
       <div className='flex flex-col gap-2 mt-3'>
         {avaliableDays.map((day, index) => (
-          <Checkbox variance='weekDay' key={index} onCheckedChange={() => handleToggleWeekDay(index)}>
+          <Checkbox
+            variance='weekDay'
+            key={index}
+            onCheckedChange={() => handleToggleWeekDay(index)}
+          >
             {index === 0 || index === 6 ? `${day}` : `${day}-feira`}
           </Checkbox>
         ))}
       </div>
+
+      {selectedWeekDaysError && (
+        <span className='text-red-500 font-semibold text-base mt-2'>
+          No mínimo, um dia da semana deve ser selecionado.
+        </span>
+      )}
 
       <button
         type='submit'
