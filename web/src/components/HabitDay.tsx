@@ -3,19 +3,26 @@ import clsx from 'clsx';
 
 import { ProgressBar } from './ProgressBar';
 import { Checkbox } from './Checkbox';
+import dayjs from 'dayjs';
 
-type ConflictProperties<T, K> = K extends true ? { habits?: never, disabled: boolean } :
-  { disabled?: never, habits: { possible: number, completed: number } } &
+type ConflictProperties<T, K> = K extends true ? { habits?: never, date?: never, disabled: boolean } :
+  { disabled?: never, habits: { possible?: number, completed?: number }, date: Date } &
   Omit<T, 'disabled' | 'habits'>;
 
 interface IHabitDayProps {
   disabled?: boolean;
-  habits?: { possible: number, completed: number };
+  habits?: { possible?: number, completed?: number };
+  date?: Date;
 }
 
-export function HabitDay({ disabled = false, ...props }: ConflictProperties<IHabitDayProps, IHabitDayProps['disabled']>) {
-  const habits = disabled ? { possible: 1, completed: 0 } : (props.habits as { possible: number, completed: number });
-  const dayProgress = Math.round((habits.completed / habits.possible) * 100);
+export function HabitDay({
+  disabled = false,
+  habits = { possible: 1, completed: 0 },
+  ...props
+}: ConflictProperties<IHabitDayProps, IHabitDayProps['disabled']>) {
+  const dayProgress = Math.round(((habits.completed ?? 0) / (habits.possible ?? 1)) * 100);
+  const weekDayName = dayjs(props.date).format('dddd');
+  const weekDayFormatted = weekDayName.charAt(0).toUpperCase() + weekDayName.slice(1);
 
   return (
     <Popover.Root>
@@ -35,12 +42,13 @@ export function HabitDay({ disabled = false, ...props }: ConflictProperties<IHab
             },
           )
         }
+        disabled={disabled}
       />
 
       <Popover.Portal>
         <Popover.Content className='min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col'>
-          <span className='font-semibold text-zinc-400'>segunda-feira</span>
-          <span className='mt-1 font-extrabold leading-tight text-3xl'>20/01</span>
+          <span className='font-semibold text-zinc-400'>{weekDayFormatted}</span>
+          <span className='mt-1 font-extrabold leading-tight text-3xl'>{dayjs(props.date).format('DD/MM')}</span>
 
           <ProgressBar progress={dayProgress}/>
 

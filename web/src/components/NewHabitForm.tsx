@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useForm, FieldValues } from 'react-hook-form';
 import { Check } from 'phosphor-react';
 import clsx from 'clsx';
+import toast from 'react-hot-toast';
 
 import { Checkbox } from './Checkbox';
+
+import { ModalContext } from '../context/ModalContext';
+
+import { api } from '../lib/axios';
 
 const avaliableDays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
@@ -19,14 +24,27 @@ export function NewHabitForm() {
     else setSelectedWeekDays([...selectedWeekDays, weekDayIndex]);
   }
 
-  const handleCreateNewHabit = (data: FieldValues) => {
+  const { toggleModalOpenState } = useContext(ModalContext);
+  async function makeResquest(data: { title: string; selectedWeekDays: number[] }) {
+    await api.post('/habits', {
+      title: data.title,
+      weekDays: data.selectedWeekDays,
+    }).then(() => toggleModalOpenState());
+  }
+
+  function handleCreateNewHabit(data: FieldValues) {
     const { title } = data;
     if (title.length < 3 || title.length > 30) setTitleError(true);
     if (selectedWeekDays.length === 0) setSelectedWeekDaysError(true);
     if (titleError || selectedWeekDaysError) return;
     setSelectedWeekDays(selectedWeekDays.sort((a, b) => a - b));
-    console.log(title, selectedWeekDays);
-  };
+
+    toast.promise(makeResquest({ title, selectedWeekDays }), {
+      loading: 'Criando hábito...',
+      success: 'Hábito criado com sucesso!',
+      error: 'Erro do servidor ao criar o hábito.',
+    });
+  }
 
   return (
     <form onSubmit={handleSubmit(handleCreateNewHabit)} className='w-full flex flex-col mt-6'>

@@ -3,9 +3,9 @@ import * as Dialog from '@radix-ui/react-dialog';
 
 import { NewHabitForm } from './NewHabitForm';
 
-export function Modal() {
+export function Modal(props: Dialog.DialogProps) {
   return (
-    <Dialog.Root>
+    <Dialog.Root {...props}>
       <Dialog.Trigger
         tabIndex={1}
         className='border border-violet-500 font-semibold rounded-lg px-6 py-4 flex items-center gap-3
@@ -24,7 +24,7 @@ export function Modal() {
           </Dialog.Close>
 
           <Dialog.Title className='text-3xl leading-tight font-extrabold'>
-              Criar título
+              Criar hábito
           </Dialog.Title>
 
           <NewHabitForm />
