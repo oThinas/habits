@@ -173,7 +173,8 @@ async function validatePost(
       .max(6), { invalid_type_error: 'Dias da semana precisa ser um array de números.' }),
   });
 
-  schemaParser(request, 'body', response, createHabitSchema, 'isPostValid');
+  const { isPostValid } = schemaParser(request, 'body', response, createHabitSchema, 'isPostValid');
+  if (!isPostValid) return { isPostValid: false };
 
   return { isPostValid: true };
 }

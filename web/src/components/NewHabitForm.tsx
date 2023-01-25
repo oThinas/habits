@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import { useForm, FieldValues } from 'react-hook-form';
 import { Check } from 'phosphor-react';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
@@ -13,8 +12,12 @@ import { api } from '../lib/axios';
 const avaliableDays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
 export function NewHabitForm() {
-  const { register, handleSubmit } = useForm();
+  const [title, setTitle] = useState('');
   const [titleError, setTitleError] = useState(false);
+  function handleTitleChange(newTitle: string) {
+    setTitleError(false);
+    setTitle(newTitle);
+  }
 
   const [selectedWeekDays, setSelectedWeekDays] = useState<number[]>([]);
   const [selectedWeekDaysError, setSelectedWeekDaysError] = useState(false);
@@ -32,11 +35,18 @@ export function NewHabitForm() {
     }).then(() => toggleModalOpenState());
   }
 
-  function handleCreateNewHabit(data: FieldValues) {
-    const { title } = data;
-    if (title.length < 3 || title.length > 30) setTitleError(true);
-    if (selectedWeekDays.length === 0) setSelectedWeekDaysError(true);
-    if (titleError || selectedWeekDaysError) return;
+  function handleCreateNewHabit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const hasTitleError = Boolean(title.length < 3 || title.length > 30);
+    const hasSelectedWeekDaysError = Boolean(selectedWeekDays.length === 0);
+
+    if (hasTitleError || hasSelectedWeekDaysError) {
+      (hasTitleError) && setTitleError(true);
+      (hasSelectedWeekDaysError) && setSelectedWeekDaysError(true);
+      // return;
+    }
+
     setSelectedWeekDays(selectedWeekDays.sort((a, b) => a - b));
 
     toast.promise(makeResquest({ title, selectedWeekDays }), {
@@ -47,7 +57,7 @@ export function NewHabitForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(handleCreateNewHabit)} className='w-full flex flex-col mt-6'>
+    <form onSubmit={(event) => handleCreateNewHabit(event)} className='w-full flex flex-col mt-6'>
       <label htmlFor='title' className='font-semibold leading-tight'>
         Qual seu comprometimento?
       </label>
@@ -57,13 +67,14 @@ export function NewHabitForm() {
         id='title'
         placeholder='ex.: Praticar exercícios, dormir bem, etc...'
         autoFocus
+        value={title}
+        onChange={(event) => handleTitleChange((event.target.value).trim())}
         className={
           clsx(
             'p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder-zinc-400 focus:outline-none focus-visible:ring-2 ring-violet-700',
             { 'ring-2 ring-red-500': titleError },
           )
         }
-        {...register('title', { minLength: 3, maxLength: 30, onChange: () => setTitleError(false) })}
       />
 
       {titleError && (
@@ -97,7 +108,8 @@ export function NewHabitForm() {
       <button
         type='submit'
         className='mt-6 rounded-lg p-4 gap-3 flex items-center justify-center font-semibold bg-green-600 hover:bg-green-500 transition-colors
-        focus:outline-none focus-visible:ring-2 ring-green-800'
+        focus:outline-none focus-visible:ring-2 ring-green-800 disabled:bg-zinc-500'
+        disabled={title.trim().length === 0 || selectedWeekDays.length === 0}
       >
         <Check size={20} weight='bold'/>
         Confirmar
